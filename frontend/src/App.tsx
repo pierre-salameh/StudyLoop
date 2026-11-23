@@ -4,6 +4,7 @@ import { GuestRoute, ProtectedRoute } from './auth/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import CoursePage from './pages/CoursePage'
 
 function Home() {
   const { user, loading } = useAuth()
@@ -52,6 +53,11 @@ export default function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route element={<ProtectedRoute />}>
+         <Route path="/dashboard" element={<Dashboard />} />
+         <Route path="/courses/:courseId" element={<CoursePage />} />
+      </Route>
       </Route>
     </Routes>
   )

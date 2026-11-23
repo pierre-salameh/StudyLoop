@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useAuth } from '../auth/auth-context'
 import { api, ApiError } from '../lib/api'
 import type { Course } from '../lib/types'
+import { Link } from 'react-router-dom'
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
@@ -118,7 +119,11 @@ export default function Dashboard() {
                 className="flex flex-col justify-between rounded-2xl bg-white p-5 shadow"
               >
                 <div>
-                  <h2 className="text-lg font-semibold">{course.title}</h2>
+                  <h2 className="text-lg font-semibold">
+                    <Link to={`/courses/${course.id}`} className="hover:underline">
+                     {course.title}
+                    </Link>
+                  </h2>
                   {course.description && (
                     <p className="mt-1 text-sm text-slate-600">
                       {course.description}
