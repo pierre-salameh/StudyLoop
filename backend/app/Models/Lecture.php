@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lecture extends Model
 {
@@ -13,4 +14,10 @@ class Lecture extends Model
     {
         return $this->belongsTo(Course::class);
     }
+
+
+    public function concepts(): HasMany
+{
+    return $this->hasMany(Concept::class)->orderBy('position');
+}
 }

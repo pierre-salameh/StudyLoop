@@ -7,19 +7,32 @@ use RuntimeException;
 
 class LlmClient
 {
-    public function chat(string $system, string $user): string
+    public function chat(string $system, string $user, ?array $jsonSchema = null): string
     {
+        $payload = [
+            'model' => config('llm.model'),
+            'messages' => [
+                ['role' => 'system', 'content' => $system],
+                ['role' => 'user', 'content' => $user],
+            ],
+            'temperature' => 0.3,
+            'stream' => false,
+        ];
+
+        if ($jsonSchema !== null) {
+            $payload['response_format'] = [
+                'type' => 'json_schema',
+                'json_schema' => [
+                    'name' => 'result',
+                    'strict' => true,
+                    'schema' => $jsonSchema,
+                ],
+            ];
+        }
+
         $response = Http::withToken(config('llm.api_key'))
             ->timeout(config('llm.timeout'))
-            ->post(rtrim(config('llm.base_url'), '/') . '/chat/completions', [
-                'model' => config('llm.model'),
-                'messages' => [
-                    ['role' => 'system', 'content' => $system],
-                    ['role' => 'user', 'content' => $user],
-                ],
-                'temperature' => 0.3,
-                'stream' => false,
-            ]);
+            ->post(rtrim(config('llm.base_url'), '/') . '/chat/completions', $payload);
 
         if ($response->failed()) {
             throw new RuntimeException(
