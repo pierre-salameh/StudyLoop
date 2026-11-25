@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Lecture;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Jobs\ExtractLectureConcepts;
 
 class LectureController extends Controller
 {
@@ -25,16 +26,18 @@ class LectureController extends Controller
             'content' => ['required', 'string', 'min:20', 'max:200000'],
         ]);
 
-        $lecture = $this->ownedCourse($request, $course)
+             $lecture = $this->ownedCourse($request, $course)
             ->lectures()
             ->create($data);
+
+        ExtractLectureConcepts::dispatch($lecture->id);
 
         return response()->json($lecture->fresh(), 201);
     }
 
-    public function show(Request $request, int $lecture): Lecture
+     public function show(Request $request, int $lecture): Lecture
     {
-        return $this->ownedLecture($request, $lecture);
+        return $this->ownedLecture($request, $lecture)->load('concepts');
     }
 
     public function update(Request $request, int $lecture): Lecture
@@ -56,6 +59,28 @@ class LectureController extends Controller
         $this->ownedLecture($request, $lecture)->delete();
 
         return response()->json(['message' => 'تم حذف المحاضرة.']);
+    }
+
+
+
+        public function reprocess(Request $request, int $lecture): JsonResponse
+    {
+        $model = $this->ownedLecture($request, $lecture);
+
+        // نمنع التكرار أثناء المعالجة، إلا إذا مرّت ساعتان (يعني أن العامل توقف في منتصف العمل)
+        $busy = in_array($model->status, ['pending', 'processing'], true)
+            && $model->updated_at->gt(now()->subHours(2));
+
+        if ($busy) {
+            return response()->json(['message' => 'المحاضرة قيد المعالجة بالفعل.'], 409);
+        }
+
+        $model->status = 'pending';
+        $model->save();
+
+        ExtractLectureConcepts::dispatch($model->id);
+
+        return response()->json($model);
     }
 
     private function ownedCourse(Request $request, int $id): Course

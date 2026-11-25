@@ -26,6 +26,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
     Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('courses', CourseController::class);
     Route::apiResource('courses.lectures', LectureController::class)->shallow();
+     Route::post('lectures/{lecture}/reprocess', [LectureController::class, 'reprocess']);
 });
 
 

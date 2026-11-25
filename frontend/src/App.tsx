@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import CoursePage from './pages/CoursePage'
+import LecturePage from './pages/LecturePage'
 
 function Home() {
   const { user, loading } = useAuth()
@@ -57,6 +58,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
          <Route path="/dashboard" element={<Dashboard />} />
          <Route path="/courses/:courseId" element={<CoursePage />} />
+         <Route path="/lectures/:lectureId" element={<LecturePage />} />
       </Route>
       </Route>
     </Routes>

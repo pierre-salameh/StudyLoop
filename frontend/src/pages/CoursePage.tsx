@@ -4,8 +4,10 @@ import { api, ApiError } from '../lib/api'
 import type { Course, Lecture, LectureSummary } from '../lib/types'
 
 const statusLabels: Record<string, string> = {
-  pending: 'قيد المعالجة',
+  pending: 'في الانتظار',
+  processing: 'جارٍ التحليل',
   ready: 'جاهزة',
+  failed: 'فشل التحليل',
 }
 
 export default function CoursePage() {
@@ -146,7 +148,14 @@ export default function CoursePage() {
                 className="flex items-center justify-between rounded-2xl bg-white p-4 shadow"
               >
                 <div>
-                  <p className="font-semibold">{lecture.title}</p>
+                                    <p className="font-semibold">
+                    <Link
+                      to={`/lectures/${lecture.id}`}
+                      className="hover:underline"
+                    >
+                      {lecture.title}
+                    </Link>
+                  </p>
                   <p className="mt-1 text-xs text-slate-500">
                     {statusLabels[lecture.status] ?? lecture.status} ·{' '}
                     {new Date(lecture.created_at).toLocaleDateString('ar')}
