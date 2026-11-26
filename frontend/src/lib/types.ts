@@ -18,12 +18,23 @@ export interface Lecture extends LectureSummary {
 }
 
 
+export interface Explanation {
+  id: number
+  concept_id: number
+  style: string
+  explanation: string | null
+  example: string | null
+  status: string
+  attempts: number
+}
+
 export interface Concept {
   id: number
   position: number
   title: string
   summary: string
   source_quote: string
+  explanations: Explanation[]
 }
 
 export interface LectureDetail extends Lecture {

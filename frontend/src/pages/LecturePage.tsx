@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api, ApiError } from '../lib/api'
 import type { LectureDetail } from '../lib/types'
+import ConceptCard from '../components/ConceptCard'
 
 export default function LecturePage() {
   const { lectureId } = useParams()
@@ -28,14 +29,33 @@ export default function LecturePage() {
     load()
   }, [load])
 
-  // أثناء الانتظار أو المعالجة نسأل الخادم كل 5 ثوانٍ
+  // نسأل الخادم كل 5 ثوانٍ أثناء تحليل المحاضرة أو توليد أي شرح
   const status = lecture?.status
+  const explaining =
+    lecture?.concepts.some((c) =>
+      c.explanations.some(
+        (e) => e.status === 'pending' || e.status === 'processing',
+      ),
+    ) ?? false
+
   useEffect(() => {
-    if (status !== 'pending' && status !== 'processing') return
+    if (status !== 'pending' && status !== 'processing' && !explaining) return
 
     const timer = setInterval(load, 5000)
     return () => clearInterval(timer)
-  }, [status, load])
+  }, [status, explaining, load])
+
+  const requestExplanation = async (conceptId: number, style: string) => {
+    try {
+      await api(`/concepts/${conceptId}/explanations`, {
+        method: 'POST',
+        body: JSON.stringify({ style }),
+      })
+      await load()
+    } catch {
+      setError('تعذّر طلب الشرح، حاول مرة أخرى.')
+    }
+  }
 
   const onReprocess = async () => {
     setReprocessing(true)
@@ -127,29 +147,13 @@ export default function LecturePage() {
               من محاضرتك لتتحقق منه بنفسك.
             </p>
 
-            <ol className="space-y-4">
+                  <ol className="space-y-4">
               {lecture.concepts.map((concept) => (
-                <li
+                <ConceptCard
                   key={concept.id}
-                  className="rounded-2xl bg-white p-5 shadow"
-                >
-                  <h2 className="text-lg font-semibold">
-                    {concept.position}. {concept.title}
-                  </h2>
-                  <p className="mt-2 text-slate-700">{concept.summary}</p>
-
-                  <details className="mt-3">
-                    <summary className="cursor-pointer text-sm text-slate-500">
-                      من نص المحاضرة
-                    </summary>
-                    <blockquote
-                      dir="auto"
-                      className="mt-2 rounded-lg bg-slate-50 p-3 text-sm text-slate-600"
-                    >
-                      {concept.source_quote}
-                    </blockquote>
-                  </details>
-                </li>
+                  concept={concept}
+                  onRequest={requestExplanation}
+                />
               ))}
             </ol>
           </>

@@ -37,7 +37,7 @@ class LectureController extends Controller
 
      public function show(Request $request, int $lecture): Lecture
     {
-        return $this->ownedLecture($request, $lecture)->load('concepts');
+                return $this->ownedLecture($request, $lecture)->load('concepts.explanations');
     }
 
     public function update(Request $request, int $lecture): Lecture
