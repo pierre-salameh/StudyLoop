@@ -7,15 +7,15 @@ use RuntimeException;
 
 class LlmClient
 {
-    public function chat(string $system, string $user, ?array $jsonSchema = null): string
+    public function chat(string $system, string $user, ?array $jsonSchema = null, ?string $model = null, float $temperature = 0.3): string
     {
         $payload = [
-            'model' => config('llm.model'),
+            'model' => $model ?? config('llm.model'),
             'messages' => [
                 ['role' => 'system', 'content' => $system],
                 ['role' => 'user', 'content' => $user],
             ],
-            'temperature' => 0.3,
+            'temperature' => $temperature,
             'stream' => false,
         ];
 
