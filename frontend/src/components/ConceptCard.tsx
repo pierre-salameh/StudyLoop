@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Concept } from '../lib/types'
+import RichText from './RichText'
 
 const STYLES = [
   { key: 'simple', label: 'مبسّط' },
@@ -44,7 +45,9 @@ export default function ConceptCard({ concept, onRequest }: Props) {
       <h2 className="text-lg font-semibold">
         {concept.position}. {concept.title}
       </h2>
-      <p className="mt-2 text-slate-700">{concept.summary}</p>
+            <p className="mt-2 text-slate-700">
+        <RichText text={concept.summary} />
+      </p>
 
       <details className="mt-3">
         <summary className="cursor-pointer text-sm text-slate-500">
@@ -111,7 +114,7 @@ export default function ConceptCard({ concept, onRequest }: Props) {
             {current?.status === 'ready' && (
               <div className="space-y-3">
                 <p dir="auto" className="whitespace-pre-line text-slate-800">
-                  {current.explanation}
+                    <RichText text={current.explanation ?? ''} />
                 </p>
 
                 {current.example && (
@@ -120,7 +123,7 @@ export default function ConceptCard({ concept, onRequest }: Props) {
                       ليس من المحاضرة: مثال من الذكاء الاصطناعي قد يحتوي أخطاء
                     </p>
                     <p dir="auto" className="whitespace-pre-line text-sm text-slate-700">
-                      {current.example}
+                     <RichText text={current.example} />
                     </p>
                   </div>
                 )}

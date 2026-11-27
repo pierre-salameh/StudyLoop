@@ -5,5 +5,6 @@ return [
     'api_key' => env('LLM_API_KEY', 'ollama'),
     'model' => env('LLM_MODEL', 'aya-expanse:8b'),
      'verifier_model' => env('LLM_VERIFIER_MODEL', env('LLM_MODEL', 'aya-expanse:8b')),
+         'explainer_model' => env('LLM_EXPLAINER_MODEL', env('LLM_MODEL', 'aya-expanse:8b')),
     'timeout' => (int) env('LLM_TIMEOUT', 300),
 ];

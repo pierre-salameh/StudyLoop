@@ -62,7 +62,7 @@ class ConceptExplainer
             $user .= "\n\nملاحظة مهمة: كتبتَ محاولة سابقة فرفضها المراجع. أعد الكتابة وتجنّب ما يلي:\n{$feedback}";
         }
 
-        $raw = $this->llm->chat($system, $user, self::SCHEMA);
+                $raw = $this->llm->chat($system, $user, self::SCHEMA, config('llm.explainer_model'));
         $data = json_decode($raw, true);
 
         if (! is_array($data)
